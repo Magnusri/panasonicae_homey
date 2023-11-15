@@ -1,0 +1,29 @@
+{
+  "actions": [
+    {
+      "id": "set-temperature",
+      "titleFormatted": {
+        "en": "Set temperature to [[temperature]]"
+      },
+      "title": {
+        "en": "Set temperature"
+      },
+      "hint": {
+        "en": "Sets the target temperature for the unit"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "temperature",
+          "title": { "en": "Temperature" },
+          "placeholder": {
+            "en": "21"
+          },
+          "min": 0,
+          "max": 50,
+          "step": 0.5
+        }
+      ]
+    }
+  ]
+}

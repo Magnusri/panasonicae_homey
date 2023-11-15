@@ -6,6 +6,12 @@
       { "ignores": ["modules"] }
     ],
     "strict": [ "off" ],
-    "quotes": [ "off" ]
+    "quotes": [ "off" ],
+    "no-unused-vars": [ "off" ],
+    "indent": [ "off" ],
+    "no-trailing-spaces": [ "off" ],
+    "no-multiple-empty-lines": [ "off" ],
+    "padded-blocks": [ "off" ],
+    "no-else-return": [ "off" ]
   }
 }

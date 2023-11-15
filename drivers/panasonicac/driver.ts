@@ -1,34 +1,85 @@
 // eslint-disable-next-line node/no-missing-import
-import Homey from 'homey';
+import Homey, { Device } from 'homey';
+import { ComfortCloud, Power, dataMode } from 'panasonic-comfort-cloud-api';
 
-class MyDriver extends Homey.Driver {
+class PanasonicACDriver extends Homey.Driver {
 
   /**
    * onInit is called when the driver is initialized.
    */
   async onInit() {
-    this.log('MyDriver has been initialized');
+    this.log('PanasonicACDriver has been initialized');
+
+    // Initialize "Then" flow cards
+    const setTemperatureCard = this.homey.flow.getActionCard('set-temperature');
+    setTemperatureCard.registerRunListener(async (args, state) => {
+      this.log('set-temperature', args, state);
+
+      const client = this.homey.settings.get("panasonicClient") as ComfortCloud;
+
+      await client.setParameters(args.device.getData().id, {
+        temperatureSet: args.temperature,
+      });
+      
+      return Promise.resolve(true);
+    });
   }
 
-  /**
-   * onPairListDevices is called when a user is adding a device and the 'list_devices' view is called.
-   * This should return an array with the data of devices that are available for pairing.
-   */
-  async onPairListDevices() {
-    return [
-      // Example device data, note that `store` is optional
-      // {
-      //   name: 'My Device',
-      //   data: {
-      //     id: 'my-device',
-      //   },
-      //   store: {
-      //     address: '127.0.0.1',
-      //   },
-      // },
-    ];
-  }
+  async onPair(session: Homey.Driver.PairSession): Promise<void> {
+    let username = "";
+    let password = "";
 
+    session.setHandler("login", async (data) => {
+      username = data.username;
+      password = data.password;
+
+      const client = new ComfortCloud(username, password);
+
+      const token = await client.login();
+
+      if (token !== undefined) {
+        this.log("Login successful");
+        this.homey.settings.set("panasonicUsername", username);
+        this.homey.settings.set("panasonicPassword", password);
+        this.homey.settings.set("panasonicToken", token);
+        this.homey.settings.set("panasonicClient", client);
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    session.setHandler("list_devices", async () => {
+      const client = this.homey.settings.get("panasonicClient") as ComfortCloud;
+      await client.login();
+  
+      const groups = await client.getGroups();
+  
+      const deviceId = groups[0].deviceList[0].deviceGuid;
+      this.log(groups[0].deviceList[0]);
+  
+      const device = await client.getDevice(deviceId);
+      this.log(device);
+  
+      const devices: Array<any> = [];
+      groups.forEach((group) => {
+        group.deviceList.forEach((device) => {
+          devices.push({
+            name: device.deviceName,
+            data: {
+              id: device.deviceGuid,
+              moduleNumber: device.deviceModuleNumber,
+            },
+            // store: {
+            //   address: '127.0.0.1',
+            // },
+          });
+        });
+      });
+  
+      return devices;
+    });
+  }
 }
 
-module.exports = MyDriver;
+module.exports = PanasonicACDriver;

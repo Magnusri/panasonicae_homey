@@ -26,6 +26,42 @@
     "name": "Magnus Ingwersen",
     "email": "magnus_rydjord@hotmail.com"
   },
+  "flow": {
+    "actions": [
+      {
+        "id": "set-temperature",
+        "titleFormatted": {
+          "en": "Set temperature to [[temperature]]"
+        },
+        "title": {
+          "en": "Set temperature"
+        },
+        "hint": {
+          "en": "Sets the target temperature for the unit"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=panasonicac"
+          },
+          {
+            "type": "number",
+            "name": "temperature",
+            "title": {
+              "en": "Temperature"
+            },
+            "placeholder": {
+              "en": "21"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 0.5
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -33,9 +69,9 @@
       },
       "class": "heater",
       "capabilities": [
-        "measure_current",
-        "meter_power",
-        "measure_temperature",
+        "measure_temperature.target",
+        "measure_temperature.inside",
+        "measure_temperature.outside",
         "onoff"
       ],
       "platforms": [
@@ -49,7 +85,68 @@
         "large": "/drivers/panasonicac/assets/images/large.png",
         "xlarge": "/drivers/panasonicac/assets/images/xlarge.png"
       },
-      "id": "panasonicac"
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": {
+              "en": "Log in with your Panasonic Comfort Cloud account"
+            },
+            "usernameLabel": {
+              "en": "E-mail address"
+            },
+            "usernamePlaceholder": {
+              "en": "john@doe.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "Password"
+            }
+          },
+          "navigation": {
+            "next": "list_devices"
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "panasonicac",
+      "settings": [
+        {
+          "id": "username",
+          "type": "text",
+          "label": {
+            "en": "Username"
+          },
+          "value": "John Doe",
+          "hint": {
+            "en": "The name of the user."
+          }
+        },
+        {
+          "id": "password",
+          "type": "password",
+          "label": {
+            "en": "Password"
+          },
+          "value": "Secret",
+          "hint": {
+            "en": "The password of the user."
+          }
+        }
+      ]
     }
   ]
 }

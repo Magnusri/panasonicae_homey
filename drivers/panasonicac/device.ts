@@ -1,21 +1,65 @@
 // eslint-disable-next-line node/no-missing-import
 import Homey from 'homey';
+import { ComfortCloud, Power, dataMode } from 'panasonic-comfort-cloud-api';
 
-class MyDevice extends Homey.Device {
+class PanasonicACDevice extends Homey.Device {
+
+  async fetchPanasonicData(device: any) {
+    const client = this.homey.settings.get("panasonicClient") as ComfortCloud;
+
+    await client.login();
+
+    const deviceId = device.getData().id;
+    const physicalDevice = await client.getDevice(deviceId);
+
+    device.setCapabilityValue('onoff', physicalDevice.parameters.operate === Power.On);
+    device.setCapabilityValue('measure_temperature.target', physicalDevice.parameters.temperatureSet);
+    device.setCapabilityValue('measure_temperature.inside', physicalDevice.parameters.insideTemperature);
+    device.setCapabilityValue('measure_temperature.outside', physicalDevice.parameters.outTemperature);
+
+    return true;
+  }
 
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('MyDevice has been initialized');
+    this.log('PanasonicACDevice has been initialized');
+
+    const client = this.homey.settings.get("panasonicClient") as ComfortCloud;
+    await client.login();
+
+    const groups = await client.getGroups();
+
+    const deviceId = groups[0].deviceList[0].deviceGuid;
+
+    const device = await client.getDevice(deviceId);
+
+    this.setCapabilityValue('onoff', device.parameters.operate === Power.On);
+    this.setCapabilityValue('measure_temperature.target', device.parameters.temperatureSet);
+    this.setCapabilityValue('measure_temperature.inside', device.parameters.insideTemperature);
+    this.setCapabilityValue('measure_temperature.outside', device.parameters.outTemperature);
+
+    this.registerCapabilityListener("onoff", async (value) => {
+      const client = this.homey.settings.get("panasonicClient") as ComfortCloud;
+
+      await client.setParameters(this.getData().id, {
+        operate: value ? Power.On : Power.Off,
+      });
+    });
+
+    // start polling temperature
+    this.homey.setInterval(() => {
+      this.fetchPanasonicData(this);
+    }, 300000); // 5 minutes
   }
 
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('MyDevice has been added');
-  }
+    this.log('PanasonicACDevice has been added');
+}
 
   /**
    * onSettings is called when the user updates the device's settings.
@@ -34,7 +78,7 @@ class MyDevice extends Homey.Device {
     newSettings: { [key: string]: boolean | string | number | undefined | null };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log("MyDevice settings where changed");
+    this.log("PanasonicACDevice settings where changed");
   }
 
   /**
@@ -43,16 +87,16 @@ class MyDevice extends Homey.Device {
    * @param {string} name The new name
    */
   async onRenamed(name: string) {
-    this.log('MyDevice was renamed');
+    this.log('PanasonicACDevice was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
-    this.log('MyDevice has been deleted');
+    this.log('PanasonicACDevice has been deleted');
   }
 
 }
 
-module.exports = MyDevice;
+module.exports = PanasonicACDevice;
