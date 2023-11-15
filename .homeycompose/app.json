@@ -1,0 +1,28 @@
+{
+  "id": "org.ingwersen.panasonicair",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Panasonic Aircondition"
+  },
+  "description": {
+    "en": "Adds support for Panasonic Aircondition devices."
+  },
+  "category": [
+    "climate"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Magnus Ingwersen",
+    "email": "magnus_rydjord@hotmail.com"
+  }
+}
