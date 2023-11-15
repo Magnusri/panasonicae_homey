@@ -25,5 +25,31 @@
   "author": {
     "name": "Magnus Ingwersen",
     "email": "magnus_rydjord@hotmail.com"
-  }
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "PanasonicAC"
+      },
+      "class": "heater",
+      "capabilities": [
+        "measure_current",
+        "meter_power",
+        "measure_temperature",
+        "onoff"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/panasonicac/assets/images/small.png",
+        "large": "/drivers/panasonicac/assets/images/large.png",
+        "xlarge": "/drivers/panasonicac/assets/images/xlarge.png"
+      },
+      "id": "panasonicac"
+    }
+  ]
 }

@@ -1,3 +1,11 @@
 {
-  "extends": "athom"
+  "extends": "athom",
+  "rules": {
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      { "ignores": ["modules"] }
+    ],
+    "strict": [ "off" ],
+    "quotes": [ "off" ]
+  }
 }
